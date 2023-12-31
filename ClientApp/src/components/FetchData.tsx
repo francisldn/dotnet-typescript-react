@@ -41,29 +41,42 @@ export const FetchData: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const populateWeatherData = async () => {
-    const response = await fetch("weatherforecast");
-    const data = await response.json();
-    setForecasts(data);
-    setLoading(false);
+    try {
+      const response = await fetch(
+        "https://localhost:7068/api/weatherforecast"
+      );
+      console.log("response", response);
+      const data = await response.json();
+      // console.log("data", data);
+      return data;
+    } catch (e) {
+      console.log("error", e);
+      return [];
+    }
   };
 
   useEffect(() => {
-    populateWeatherData();
+    console.log("useEffect");
+    populateWeatherData().then((data) => {
+      console.log("data", data);
+      setForecasts(data);
+      setLoading(false);
+    });
   }, []);
 
-  const contents = loading ? (
-    <p>
-      <em>Loading...</em>
-    </p>
-  ) : (
-    <ForecastsTable forecasts={forecasts} />
-  );
+  console.log("forecasts", forecasts);
 
   return (
     <div>
       <h1 id='tableLabel'>Weather forecast</h1>
       <p>This component demonstrates fetching data from the server.</p>
-      {contents}
+      {loading ? (
+        <p>
+          <em>Loading...</em>
+        </p>
+      ) : (
+        <ForecastsTable forecasts={forecasts} />
+      )}
     </div>
   );
 };
